@@ -1,0 +1,18 @@
+{{- if eq .Values.schedule "now" -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "mysqldump.fullname" . }}
+  labels:
+    snappyflow/compname: mysql_dnd
+    snappyflow/appname: QA_DND-stage
+    app: {{ template "mysqldump.name" . }}
+    chart: {{ template "mysqldump.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  backoffLimit: 1
+  template:
+{{ $file := .Files.Get "files/job.tpl" }}
+{{ tpl $file . | indent 4 }}
+{{- end -}}
